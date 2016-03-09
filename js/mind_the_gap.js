@@ -1,34 +1,93 @@
-var defil = null;
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+//  
+//                    MIND THE GAP 
+//
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+//Regle du jeux
+//------------- 
+/*Création d’un jeu de progression entre plateformes. Le but est de créer des ponts de la bonne taille
+afin de relier deux plateformes entre-elles. A chaque tour, deux plateformes donc : celle où l’on se
+trouve et celle où l’on doit aller. Pendant la durée du clic sur l’écran, un pont (une barre) se crée
+verticalement, progressivement de bas en haut, depuis l’extrémité de la première plateforme (gérer
+la vitesse de création de cette barre). Lorsque le clic est relâché, le pont créé s’incline (tombe) et
+permet d’accéder à la seconde plateforme (ou non). Le pont ne doit ni être trop court, ni trop long.
+C’est-à-dire que le pont doit être au minimum égal à la distance séparant les 2 plateformes et au
+maximum à la distance égale à l’espace entre les 2 plateformes et la longueur de la seconde
+plateforme.
+Si le pont est valide, la seconde plateforme devient la première et une nouvelle plateforme arrive (de
+taille et de distance aléatoire), on gagne un point. On peut donc rejouer immédiatement en créant
+un nouveau pont. Si le pont n’est pas valide, c’est la fin du jeu.
+*/
+
+
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+//Declaration des variables
+//-------------------------
+//instruction
+var bouton_jouer = null;
+//jeu
+var largeur_jeux = null;
+var hauteur_jeux = null;
+//pont
 var longueur_pont = null;
+var largeur_pont = null;
+//vitesse creation pont
+var defil = null;
 var pas_vertical = 10;
+//plateformes
+var hauteur_plateformeGauche = null;
+var longueur_plateformeGauche = null;
+var hauteur_plateformeDroite = null;
+var longueur_plateformeDroite = null;
+var marge_max_plateformeDroite = null;
+var marge_aleatoire_plateformeDroite = null;
+var longueur_max_plateformeDroite = null;
+var longueur_aleatoire_plateformeDroite = null;
+//fausse
+var taille_fausse = null;
+//regles 
+var longueur_pont_max = null;
+var longueur_pont_min = null;
 
 
-
-
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+//Appel des fonctions
+//-------------------
 window.onload = function() {
     init();
-    //deplacement_pont();
-
 }
 
+//----------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+
+//Definitions des fonctions 
+//-------------------------
 function init() {
-    var bouton_jouer = document.getElementById('jouer');
-    //definition des variables
-    //------------------------------------------------------------------
-    var hauteur_plateformeGauche = 100; // fixe
-    var longueur_plateformeGauche = 200; // fixe
-
-    var longueur_pont = 0;
-    var largeur_pont = 10; //fixe
-
-    var hauteur_plateformeDroite = (hauteur_plateformeGauche - largeur_pont) ; // fixe
-    var longueur_plateformeDroite = 400;
+    bouton_jouer = document.getElementById('jouer');
+    //initialisation des variables
+    //----------------------------
+    //jeux 
+    largeur_jeux = document.getElementById("jeux").clientWidth ; //on ne prend pas en compte les bordures
+    hauteur_jeux = document.getElementById("jeux").clientHeight ; //on ne prend pas en compte les bordures 
+    //plateforme gauche
+    longueur_plateformeGauche = 200; 
+    hauteur_plateformeGauche = 100; // fixe
+    //pont
+    longueur_pont = 0;
+    largeur_pont = 10; //fixe
+    //plateforme droite
+    hauteur_plateformeDroite = (hauteur_plateformeGauche - largeur_pont) ; // fixe
+    longueur_plateformeDroite= 400;
     //------------------------------------------------------------------
     //------------------------------------------------------------------
     bouton_jouer.onclick = function() {
 
         //creation objets
-        //------------------------------------------------------------------
+        //---------------
         //creation des deux plateformes 
         plateformeDroite_Div = document.createElement('div');
         plateformeDroite_Div.id = 'plateformeDroite'; 
@@ -52,16 +111,19 @@ function init() {
         //------------------------------------------------------------------
 
         //positions et tailles objets
-        //------------------------------------------------------------------
+        //---------------------------
+
         //positions et tailles des deux plateformes
         plateformeDroite_Div.style.width = longueur_plateformeDroite + 'px';
         plateformeDroite_Div.style.height = hauteur_plateformeDroite + 'px';
-        plateformeDroite_Div.style.right = 0 + 'px';
+        plateformeDroite_Div.style.right = 0 + 'px'; 
         plateformeDroite_Div.style.bottom = 0 + 'px';
+        
+
 
         plateformeGauche_Div.style.width = longueur_plateformeGauche + 'px';
         plateformeGauche_Div.style.height = hauteur_plateformeGauche + 'px';
-        plateformeGauche_Div.style.left = 0 + 'px';
+        plateformeGauche_Div.style.left = 0 + 'px'; // fixe 
         plateformeGauche_Div.style.bottom = 0 + 'px';
 
         //position et taille du pont
@@ -69,11 +131,13 @@ function init() {
         pont_Div.style.height = longueur_pont + 'px';
         pont_Div.style.left = longueur_plateformeGauche + 'px';
         pont_Div.style.bottom = hauteur_plateformeGauche + 'px';
+
+        
         //------------------------------------------------------------------
         //------------------------------------------------------------------
 
         //insertion objets dans le jeux
-        //------------------------------------------------------------------
+        //-----------------------------
         jeux_Div = document.getElementById('jeux');
         jeux_Div.appendChild(plateformeDroite_Div);
         jeux_Div.appendChild(plateformeGauche_Div);
@@ -83,16 +147,10 @@ function init() {
         score_Div.innerHTML = 'En avant !';
 
         global_Div = document.getElementById('global');
-        //------------------------------------------------------------------
-        //------------------------------------------------------------------
 
-
-        //console.log(pont_Div.style.height); //recupere longueur du pont
         deplacement_pont();
    };
 }
-
-
 
 
 function deplacement_pont() {
@@ -101,126 +159,69 @@ function deplacement_pont() {
         defil = setInterval(agrandir_pont,50);
     }, false);
 
-
     document.addEventListener("mouseup", function(event){
         clearInterval(defil);
-        //console.log(pont_Div.style.height); //recupere longueur du pont 
         pivoter_pont();
-
     }, false);
-
-
-
-
 };
+
 
 function agrandir_pont(){
     longueur_pont = longueur_pont + pas_vertical;
     pont_Div.style.height = longueur_pont +  'px';
 }; 
 
-function pivoter_pont(){
-    //on recupere les tailles des elements crees
-    //------------------------------------------------------------------
-    var taille_pont = document.getElementById("pont").clientHeight ; //on ne prend pas en compte les brdures
-    document.getElementById("pont").style.height = taille_pont + "px";
-    console.log("la taille_pont est de : " + taille_pont);
-    var largeur_jeux = document.getElementById("jeux").clientWidth ; //on ne prend pas en compte les brdures
-    document.getElementById("jeux").style.width = largeur_jeux + "px";
-    //console.log("la largeur_jeux est de : " + largeur_jeux);
-    var hauteur_jeux = document.getElementById("jeux").clientHeight ; //on ne prend pas en compte les brdures
-    document.getElementById("jeux").style.height = hauteur_jeux + "px";
-    //console.log("la hauteur_jeux est de : " + hauteur_jeux);
-    var taille_plateformeGauche = document.getElementById("plateformeGauche").clientWidth ; //on ne prend pas en compte les brdures
-    document.getElementById("plateformeGauche").style.width = taille_plateformeGauche + "px";
-    //console.log("la taille_plateformeGauche est de : " + taille_plateformeGauche);
-    var hauteur_plateformeGauche = document.getElementById("plateformeGauche").clientHeight ; //on ne prend pas en compte les brdures
-    document.getElementById("plateformeGauche").style.height = hauteur_plateformeGauche + "px";
-    //console.log("la hauteur_plateformeGauche est de : " + hauteur_plateformeGauche);
-    var taille_plateformeDroite = document.getElementById("plateformeDroite").clientWidth ; //on ne prend pas en compte les brdures
-    document.getElementById("plateformeDroite").style.width = taille_plateformeDroite + "px";
-    //console.log("la taille_plateformeDroite est de : " + taille_plateformeDroite);
-    var taille_fausse = largeur_jeux - ( taille_plateformeGauche + taille_plateformeDroite ) ;
-    //console.log("la taille_fausse est de : " + taille_fausse);
-    var taille_pont_max = hauteur_jeux - hauteur_plateformeGauche;
-    console.log("la taille_pont_max est de : " + taille_pont_max);
-    //------------------------------------------------------------------
-    //------------------------------------------------------------------
 
+function pivoter_pont(){
+    //regles
+    longueur_pont_max = largeur_jeux - longueur_plateformeGauche; 
+    longueur_pont_min = largeur_jeux - ( longueur_plateformeGauche + longueur_plateformeDroite); 
+    //------------------------------------------------------------------
+    //------------------------------------------------------------------
     //tests suivant la longueur du pont
     //------------------------------------------------------------------
-    if ( (taille_pont >= taille_fausse) && (taille_pont < taille_pont_max) ) {
+    if ( (longueur_pont <= longueur_pont_max) && (longueur_pont >= longueur_pont_min) ) {
         pont_Div.style.transform = 'rotate(90deg)';
         pont_Div.style.transformOrigin = "left bottom";
         score_Div.innerHTML = 'Bien joué !';
-        setTimeout(function(){ niveau_suivant(); }, 1000);
-        
-    } else {        
+        setTimeout(function(){ niveau_suivant(); }, 1000); //on passe au niveau suivant 
+
+    } else if (longueur_pont > longueur_pont_max) {
+        pont_Div.style.transform = 'rotate(90deg)';
+        pont_Div.style.transformOrigin = "left bottom";
+        score_Div.innerHTML = 'Tu es nul !';
+        alert("trop long !");
+
+    } else {
         pont_Div.style.transform = 'rotate(180deg)';
         pont_Div.style.transformOrigin = "left bottom";
         score_Div.innerHTML = 'Tu es nul !';
-        alert("perdu !");
+        alert("trop court !");
     }
 };
 
+
+
 function niveau_suivant(){
+
     score_Div.innerHTML = 'Tu es au niveau : 1 !';
     //initialisation pont
-    //------------------------------------------------------------------
+    //-------------------
     longueur_pont = 0;
     pont_Div.style.transform = 'rotate(0deg)';
     pont_Div.style.transformOrigin = "left bottom";
     pont_Div.style.height = longueur_pont + 'px';
-    //------------------------------------------------------------------
-    //------------------------------------------------------------------
-    //Modification plateforme
-    //------------------------------------------------------------------
-    //on recupere taille plateforme droite pour la plateforme de gauche
-    var taille_plateformeDroite = document.getElementById("plateformeDroite").clientWidth ; //on ne prend pas en compte les brdures
-    document.getElementById("plateformeDroite").style.width = taille_plateformeDroite + "px";
-    longueur_plateformeGauche = taille_plateformeDroite;
+    
+    //Modification des plateformes
+    //----------------------------
+    //La plateforme de gauche prend la taille de la plateforme de droite
+    longueur_plateformeGauche = longueur_plateformeDroite;
     plateformeGauche_Div.style.width = longueur_plateformeGauche + 'px';
-    //------------------------------------------------------------------
-    //------------------------------------------------------------------
-    //on recalle le pont sur la plateforme de gauche 
-    //------------------------------------------------------------------
     pont_Div.style.left = longueur_plateformeGauche + 'px';
-    //------------------------------------------------------------------
-    //------------------------------------------------------------------
-    //on cree aleatoirement la plateforme de droite
-    //------------------------------------------------------------------
-    var largeur_jeux = document.getElementById("jeux").clientWidth ; //on ne prend pas en compte les brdures
-    document.getElementById("jeux").style.width = largeur_jeux + "px";
-    var hauteur_jeux = document.getElementById("jeux").clientHeight ; //on ne prend pas en compte les brdures
-    document.getElementById("jeux").style.height = hauteur_jeux + "px";
-    //console.log("la hauteur_jeux est de : " + hauteur_jeux);
-    var hauteur_plateformeGauche = document.getElementById("plateformeGauche").clientHeight ; //on ne prend pas en compte les brdures
-    document.getElementById("plateformeGauche").style.height = hauteur_plateformeGauche + "px";
-    //console.log("la hauteur_plateformeGauche est de : " + hauteur_plateformeGauche);
-    //on prend deux fois la largeur du pont comme marge
-    var largeur_pont = document.getElementById("pont").clientWidth ; //on ne prend pas en compte les brdures
-    document.getElementById("pont").style.width = hauteur_dispo + "px";
-    var taille_max_plateforme_droite = largeur_jeux - (longueur_plateformeGauche + 10*largeur_pont);
-    //console.log(taille_max_plateforme_droite);
-    var hauteur_dispo = hauteur_jeux - (hauteur_plateformeGauche + 10*largeur_pont) ;
-    //console.log("la taille_fausse est de : " + taille_fausse);
-    //on affecte une valeur aleatoire ne depassant pas taille_max_plateforme_droite et la hauteur disponible dans le jeux
-    var mini_long = Math.min(taille_max_plateforme_droite,hauteur_dispo);
-    console.log("mini_long = " + mini_long);
-    var longueur_fausse = Math.random() * mini_long; 
-    console.log("longueur_fausse = " + longueur_fausse);
 
-    var longueur_plateformeDroite = Math.random() * (largeur_jeux - (longueur_fausse+longueur_plateformeGauche))
-
-
+    //on varie aleatoirement la taille de la plateformeDroite
+    longueur_max_plateformeDroite = largeur_jeux - longueur_plateformeGauche;
+    longueur_plateformeDroite = Math.random() * longueur_max_plateformeDroite;
     plateformeDroite_Div.style.width = longueur_plateformeDroite + 'px';
-    //------------------------------------------------------------------
-    //------------------------------------------------------------------
 
-
-
-    
-    
-    
 }
-
