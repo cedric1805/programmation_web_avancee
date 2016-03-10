@@ -28,6 +28,7 @@ un nouveau pont. Si le pont n’est pas valide, c’est la fin du jeu.
 //-------------------------
 //instruction
 var bouton_jouer = null;
+var bouton_restart = null;
 //jeu
 var largeur_jeux = null;
 var hauteur_jeux = null;
@@ -42,16 +43,16 @@ var hauteur_plateformeGauche = null;
 var longueur_plateformeGauche = null;
 var hauteur_plateformeDroite = null;
 var longueur_plateformeDroite = null;
-var marge_max_plateformeDroite = null;
-var marge_aleatoire_plateformeDroite = null;
 var longueur_max_plateformeDroite = null;
 var longueur_aleatoire_plateformeDroite = null;
-//fausse
-var taille_fausse = null;
 //regles 
 var longueur_pont_max = null;
 var longueur_pont_min = null;
+//score
+var score = null;
 
+// souris
+var souris = false;
 
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
@@ -67,12 +68,15 @@ window.onload = function() {
 //Definitions des fonctions 
 //-------------------------
 function init() {
+    //on recupere les informations utiles concernant l'environnement de jeu 
     bouton_jouer = document.getElementById('jouer');
+    bouton_restart = document.getElementById('resart');
     //initialisation des variables
     //----------------------------
     //jeux 
     largeur_jeux = document.getElementById("jeux").clientWidth ; //on ne prend pas en compte les bordures
     hauteur_jeux = document.getElementById("jeux").clientHeight ; //on ne prend pas en compte les bordures 
+    score = 0;
     //plateforme gauche
     longueur_plateformeGauche = 200; 
     hauteur_plateformeGauche = 100; // fixe
@@ -83,86 +87,112 @@ function init() {
     hauteur_plateformeDroite = (hauteur_plateformeGauche - largeur_pont) ; // fixe
     longueur_plateformeDroite= 400;
     //------------------------------------------------------------------
+    //--------------------------------------------------------------
+
+}    
+
+
+function jouer(){
+
+
+
+
+    //creation objets
+    //---------------
+    //creation des deux plateformes 
+    plateformeDroite_Div = document.createElement('div');
+    plateformeDroite_Div.id = 'plateformeDroite'; 
+    plateformeDroite_Div.style.border = '1px solid black';
+    plateformeDroite_Div.innerHTML = 'plateforme droite !';
+    plateformeDroite_Div.style.position = "absolute";
+    plateformeDroite_Div.style.backgroundColor = '#383127' ;
+
+    plateformeGauche_Div = document.createElement('div');
+    plateformeGauche_Div.id = 'plateformeGauche'; 
+    plateformeGauche_Div.style.border = '1px solid black';
+    plateformeGauche_Div.innerHTML = 'plateforme gauche !';
+    plateformeGauche_Div.style.position = "absolute";
+    plateformeGauche_Div.style.backgroundColor = '#383127' ;
+
+    //creation du pont
+    pont_Div = document.createElement('div');
+    pont_Div.id = 'pont'; 
+    pont_Div.style.border = '1px solid black';
+    pont_Div.innerHTML = 'le pont !';
+    pont_Div.style.position = "absolute";
+    pont_Div.style.backgroundColor = '#383127' ;
+
+    //creation coureur 
+    
+    //coureur_img = document.createElement('div');
+    coureur_img = document.createElement('div');
+    coureur_img.id = 'coureur'; 
+    coureur_img.style.width = 95 + 'px';
+    coureur_img.style.height = 120 + 'px';
+    //coureur_img.scr = "css/coureur.gif";
+    coureur_img.innerHTML = 'coureur !';
+    coureur_img.style.position = "absolute";
+    //coureur_img.style.backgroundColor = '#383127' ;
+    coureur_img.style.backgroundImage = "css/coureur.gif"; 
     //------------------------------------------------------------------
-    bouton_jouer.onclick = function() {
+    //------------------------------------------------------------------
 
-        //creation objets
-        //---------------
-        //creation des deux plateformes 
-        plateformeDroite_Div = document.createElement('div');
-        plateformeDroite_Div.id = 'plateformeDroite'; 
-        plateformeDroite_Div.style.border = '1px solid black';
-        plateformeDroite_Div.innerHTML = 'plateforme droite !';
-        plateformeDroite_Div.style.position = "absolute";
+    //positions et tailles objets
+    //---------------------------
 
-        plateformeGauche_Div = document.createElement('div');
-        plateformeGauche_Div.id = 'plateformeGauche'; 
-        plateformeGauche_Div.style.border = '1px solid black';
-        plateformeGauche_Div.innerHTML = 'plateforme gauche !';
-        plateformeGauche_Div.style.position = "absolute";
-
-        //creation du pont
-        pont_Div = document.createElement('div');
-        pont_Div.id = 'pont'; 
-        pont_Div.style.border = '1px solid black';
-        pont_Div.innerHTML = 'le pont !';
-        pont_Div.style.position = "absolute";
-        //------------------------------------------------------------------
-        //------------------------------------------------------------------
-
-        //positions et tailles objets
-        //---------------------------
-
-        //positions et tailles des deux plateformes
-        plateformeDroite_Div.style.width = longueur_plateformeDroite + 'px';
-        plateformeDroite_Div.style.height = hauteur_plateformeDroite + 'px';
-        plateformeDroite_Div.style.right = 0 + 'px'; 
-        plateformeDroite_Div.style.bottom = 0 + 'px';
-        
+    //positions et tailles des deux plateformes
+    plateformeDroite_Div.style.width = longueur_plateformeDroite + 'px';
+    plateformeDroite_Div.style.height = hauteur_plateformeDroite + 'px';
+    plateformeDroite_Div.style.right = 0 + 'px'; 
+    plateformeDroite_Div.style.bottom = 0 + 'px';
+    
 
 
-        plateformeGauche_Div.style.width = longueur_plateformeGauche + 'px';
-        plateformeGauche_Div.style.height = hauteur_plateformeGauche + 'px';
-        plateformeGauche_Div.style.left = 0 + 'px'; // fixe 
-        plateformeGauche_Div.style.bottom = 0 + 'px';
+    plateformeGauche_Div.style.width = longueur_plateformeGauche + 'px';
+    plateformeGauche_Div.style.height = hauteur_plateformeGauche + 'px';
+    plateformeGauche_Div.style.left = 0 + 'px'; // fixe 
+    plateformeGauche_Div.style.bottom = 0 + 'px';
 
-        //position et taille du pont
-        pont_Div.style.width = largeur_pont + 'px';
-        pont_Div.style.height = longueur_pont + 'px';
-        pont_Div.style.left = longueur_plateformeGauche + 'px';
-        pont_Div.style.bottom = hauteur_plateformeGauche + 'px';
+    //position et taille du pont
+    pont_Div.style.width = largeur_pont + 'px';
+    pont_Div.style.height = longueur_pont + 'px';
+    pont_Div.style.left = longueur_plateformeGauche + 'px';
+    pont_Div.style.bottom = hauteur_plateformeGauche + 'px';
 
-        
-        //------------------------------------------------------------------
-        //------------------------------------------------------------------
+    //position coureur 
+    coureur_img.style.bottom = hauteur_plateformeGauche + 'px';
+    coureur_img.style.left = (longueur_plateformeGauche / 8) + 'px';
+    //------------------------------------------------------------------
+    //------------------------------------------------------------------
 
-        //insertion objets dans le jeux
-        //-----------------------------
-        jeux_Div = document.getElementById('jeux');
-        jeux_Div.appendChild(plateformeDroite_Div);
-        jeux_Div.appendChild(plateformeGauche_Div);
-        jeux_Div.appendChild(pont_Div);
+    //insertion objets dans le jeux
+    //-----------------------------
+    jeux_Div = document.getElementById('jeux');
+    jeux_Div.appendChild(plateformeDroite_Div);
+    jeux_Div.appendChild(plateformeGauche_Div);
+    jeux_Div.appendChild(pont_Div);
+    jeux_Div.appendChild(coureur_img);
 
-        score_Div = document.getElementById('score');
-        score_Div.innerHTML = 'En avant !';
+    score_Div = document.getElementById('score');
+    score_Div.innerHTML = 'En avant !';
 
-        global_Div = document.getElementById('global');
+    global_Div = document.getElementById('global');
 
-        deplacement_pont();
-   };
-}
-
+    deplacement_pont();
+};
 
 function deplacement_pont() {
+    if (souris === false) {
+        souris = true;
+        global_Div.addEventListener("mousedown", function(event){     
+            defil = setInterval(agrandir_pont,50);
+        }, false);
 
-    global_Div.addEventListener("mousedown", function(event){     
-        defil = setInterval(agrandir_pont,50);
-    }, false);
-
-    document.addEventListener("mouseup", function(event){
-        clearInterval(defil);
-        pivoter_pont();
-    }, false);
+        global_Div.addEventListener("mouseup", function(event){
+            clearInterval(defil);
+            pivoter_pont();
+        }, false);
+    }
 };
 
 
@@ -184,27 +214,28 @@ function pivoter_pont(){
         pont_Div.style.transform = 'rotate(90deg)';
         pont_Div.style.transformOrigin = "left bottom";
         score_Div.innerHTML = 'Bien joué !';
+        
         setTimeout(function(){ niveau_suivant(); }, 1000); //on passe au niveau suivant 
 
     } else if (longueur_pont > longueur_pont_max) {
         pont_Div.style.transform = 'rotate(90deg)';
         pont_Div.style.transformOrigin = "left bottom";
-        score_Div.innerHTML = 'Tu es nul !';
-        alert("trop long !");
+        score_Div.innerHTML = 'Trop long !';
+        alert('Ton score est de : ' + score + ' !');
 
     } else {
         pont_Div.style.transform = 'rotate(180deg)';
         pont_Div.style.transformOrigin = "left bottom";
-        score_Div.innerHTML = 'Tu es nul !';
-        alert("trop court !");
+        score_Div.innerHTML = "Trop court !";
+        alert('Ton score est de : ' + score + ' !');
     }
 };
 
 
 
 function niveau_suivant(){
-
-    score_Div.innerHTML = 'Tu es au niveau : 1 !';
+    score = score + 1;
+    score_Div.innerHTML = 'Tu es au niveau : ' + score + ' !';
     //initialisation pont
     //-------------------
     longueur_pont = 0;
@@ -224,4 +255,17 @@ function niveau_suivant(){
     longueur_plateformeDroite = Math.random() * longueur_max_plateformeDroite;
     plateformeDroite_Div.style.width = longueur_plateformeDroite + 'px';
 
+}
+
+
+function restart(){
+    //on vide la div jeux
+    //-------------------
+    // retire tous les enfants d'un de la div jeux 
+    niveau_suivant();
+    var element = document.getElementById("jeux");
+    while (element.firstChild) {
+        element.removeChild(element.firstChild);
+    };
+    //init();
 }
